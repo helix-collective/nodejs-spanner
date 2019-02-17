@@ -10,7 +10,6 @@
     "src/*.ts",
     "src/v1/*.d.ts",
     "src/**/*.js",
-    "src/**/*.json",
     "test/*.ts",
     "system-test/*.ts",
   ]

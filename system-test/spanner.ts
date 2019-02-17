@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-'use strict';
-
 import * as assert from 'assert';
+// tslint:disable-next-line
 import pLimit = require('p-limit');
 import concat = require('concat-stream');
 import * as crypto from 'crypto';
@@ -3760,6 +3759,7 @@ describe('Spanner', () => {
             });
       });
 
+      // tslint:disable-next-line ban
       it.skip('should execute a long running pdml statement', () => {
         const count = 10000;
 
