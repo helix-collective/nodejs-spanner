@@ -4,12 +4,14 @@
     "rootDir": ".",
     "outDir": "build",
     "noImplicitAny": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "target": "es2016"
   },
   "include": [
     "src/*.ts",
     "src/v1/*.d.ts",
     "src/**/*.js",
+    "src/**/*.json",
     "test/*.ts",
     "system-test/*.ts",
   ]
