@@ -21,8 +21,6 @@ const cp = require('child_process');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const batchCmd = `node batch.js`;
-const crudCmd = `node crud.js`;
 const schemaCmd = `node schema.js`;
 const indexingCmd = `node indexing.js`;
 const transactionCmd = `node transaction.js`;
@@ -127,37 +125,27 @@ describe('Spanner', () => {
 
   // insert_data
   it(`should insert rows into an example table`, async () => {
-    const output = execSync(
-      `${crudCmd} insert ${INSTANCE_ID} ${DATABASE_ID} ${PROJECT_ID}`
-    );
+    const output = execSync(`node insertData ${INSTANCE_ID} ${DATABASE_ID}`);
     assert.match(output, /Inserted data\./);
   });
 
   // delete_data
   it(`should delete and then insert rows in the example tables`, async () => {
-    let output = execSync(
-      `${crudCmd} delete ${INSTANCE_ID} ${DATABASE_ID} ${PROJECT_ID}`
-    );
+    let output = execSync(`node deleteData ${INSTANCE_ID} ${DATABASE_ID}`);
     assert.match(output, /Deleted data\./);
-    output = execSync(
-      `${crudCmd} insert ${INSTANCE_ID} ${DATABASE_ID} ${PROJECT_ID}`
-    );
+    output = execSync(`node insertData ${INSTANCE_ID} ${DATABASE_ID}`);
     assert.match(output, /Inserted data\./);
   });
 
   // query_data
   it(`should query an example table and return matching rows`, async () => {
-    const output = execSync(
-      `${crudCmd} query ${INSTANCE_ID} ${DATABASE_ID} ${PROJECT_ID}`
-    );
+    const output = execSync(`node queryData ${INSTANCE_ID} ${DATABASE_ID}`);
     assert.match(output, /SingerId: 1, AlbumId: 1, AlbumTitle: Total Junk/);
   });
 
   // read_data
   it(`should read an example table`, async () => {
-    const output = execSync(
-      `${crudCmd} read ${INSTANCE_ID} ${DATABASE_ID} ${PROJECT_ID}`
-    );
+    const output = execSync(`node readData ${INSTANCE_ID} ${DATABASE_ID}`);
     assert.match(output, /SingerId: 1, AlbumId: 1, AlbumTitle: Total Junk/);
   });
 
@@ -172,9 +160,7 @@ describe('Spanner', () => {
 
   // update_data
   it(`should update existing rows in an example table`, async () => {
-    const output = execSync(
-      `${crudCmd} update ${INSTANCE_ID} ${DATABASE_ID} ${PROJECT_ID}`
-    );
+    const output = execSync(`node updateData ${INSTANCE_ID} ${DATABASE_ID}`);
     assert.match(output, /Updated data\./);
   });
 
@@ -183,9 +169,7 @@ describe('Spanner', () => {
     // read-stale-data reads data that is exactly 15 seconds old.  So, make sure
     // 15 seconds have elapsed since the update_data test.
     await new Promise(r => setTimeout(r, 16000));
-    const output = execSync(
-      `${crudCmd} read-stale ${INSTANCE_ID} ${DATABASE_ID} ${PROJECT_ID}`
-    );
+    const output = execSync(`node readStaleData ${INSTANCE_ID} ${DATABASE_ID}`);
     assert.match(
       output,
       /SingerId: 1, AlbumId: 1, AlbumTitle: Total Junk, MarketingBudget: 100000/
@@ -303,7 +287,7 @@ describe('Spanner', () => {
     const identifier = JSON.stringify(transaction.identifier());
 
     const output = execSync(
-      `${batchCmd} create-query-partitions ${INSTANCE_ID} ${DATABASE_ID} '${identifier}' ${PROJECT_ID}`
+      `node createQueryPartitions ${INSTANCE_ID} ${DATABASE_ID} '${identifier}'`
     );
     assert.match(output, /Successfully created \d query partitions\./);
     await transaction.close();
@@ -321,7 +305,7 @@ describe('Spanner', () => {
     const partition = JSON.stringify(partitions[0]);
 
     const output = execSync(
-      `${batchCmd} execute-partition ${INSTANCE_ID} ${DATABASE_ID} '${identifier}' '${partition}' ${PROJECT_ID}`
+      `node executePartition ${INSTANCE_ID} ${DATABASE_ID} '${identifier}' '${partition}' ${PROJECT_ID}`
     );
     assert.match(output, /Successfully received \d from executed partition\./);
     await transaction.close();

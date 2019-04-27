@@ -1,5 +1,5 @@
 /**
- * Copyright 2016, Google, Inc.
+ * Copyright 2018, Google, Inc.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,35 +13,42 @@
  * limitations under the License.
  */
 
+// sample-metadata:
+//  title: Execute partition
+//  description: Executes a partition.
+//  usage: node executePartition <instanceName> <databaseName> <identifier> <partition> <projectId>
+
 'use strict';
 
-async function main(
-  instanceId = 'my-instance', // Your Cloud Spanner instance ID
-  databaseId = 'my-database' // Your Cloud Spanner database ID
-) {
-  // [START spanner_quickstart]
+async function main(instanceId, databaseId, identifier, partition) {
+  // [START spanner_batch_execute_partitions]
   // Imports the Google Cloud client library
   const {Spanner} = require('@google-cloud/spanner');
+
+  /**
+   * TODO(developer): Uncomment the following lines before running the sample.
+   */
+  // const instanceId = 'my-instance';
+  // const databaseId = 'my-database';
+  // const identifier = {};
+  // const partition = {};
 
   // Creates a client
   const spanner = new Spanner();
 
-  async function quickstart() {
+  async function executePartition() {
     // Gets a reference to a Cloud Spanner instance and database
     const instance = spanner.instance(instanceId);
     const database = instance.database(databaseId);
+    const transaction = database.batchTransaction(identifier);
 
-    // The query to execute
-    const query = {
-      sql: 'SELECT 1',
-    };
-
-    // Execute a simple SQL statement
-    const [rows] = await database.run(query);
-    console.log(`Query: ${rows.length} found.`);
-    rows.forEach(row => console.log(row));
+    const [rows] = await transaction.execute(partition);
+    console.log(
+      `Successfully received ${rows.length} from executed partition.`
+    );
   }
-  quickstart();
-  // [END spanner_quickstart]
+  executePartition();
+  // [END spanner_batch_execute_partitions]
 }
+
 main(...process.argv.slice(2));

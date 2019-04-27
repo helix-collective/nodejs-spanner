@@ -1,5 +1,5 @@
 /**
- * Copyright 2016, Google, Inc.
+ * Copyright 2018, Google, Inc.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,35 +13,40 @@
  * limitations under the License.
  */
 
+// sample-metadata:
+//  title: Create query partitions
+//  usage: node createQueryPartitions <instanceName> <databaseName> <identifier> <projectId>
+
 'use strict';
 
-async function main(
-  instanceId = 'my-instance', // Your Cloud Spanner instance ID
-  databaseId = 'my-database' // Your Cloud Spanner database ID
-) {
-  // [START spanner_quickstart]
+async function main(instanceId, databaseId, identifier) {
+  // [START spanner_batch_client]
   // Imports the Google Cloud client library
   const {Spanner} = require('@google-cloud/spanner');
+
+  /**
+   * TODO(developer): Uncomment the following lines before running the sample.
+   */
+  // const instanceId = 'my-instance';
+  // const databaseId = 'my-database';
+  // const identifier = {};
 
   // Creates a client
   const spanner = new Spanner();
 
-  async function quickstart() {
+  async function createQueryPartitions() {
     // Gets a reference to a Cloud Spanner instance and database
     const instance = spanner.instance(instanceId);
     const database = instance.database(databaseId);
+    const transaction = database.batchTransaction(identifier);
 
-    // The query to execute
-    const query = {
-      sql: 'SELECT 1',
-    };
+    const query = 'SELECT * FROM Singers';
 
-    // Execute a simple SQL statement
-    const [rows] = await database.run(query);
-    console.log(`Query: ${rows.length} found.`);
-    rows.forEach(row => console.log(row));
+    const [partitions] = await transaction.createQueryPartitions(query);
+    console.log(`Successfully created ${partitions.length} query partitions.`);
   }
-  quickstart();
-  // [END spanner_quickstart]
+  createQueryPartitions();
+  // [END spanner_batch_client]
 }
+
 main(...process.argv.slice(2));

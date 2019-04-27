@@ -1,5 +1,5 @@
 /**
- * Copyright 2016, Google, Inc.
+ * Copyright 2017, Google, Inc.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,35 +13,46 @@
  * limitations under the License.
  */
 
+// sample-metadata:
+//  title: Delete data
+//  description: Deletes rows from an example Cloud Spanner table.
+//  usage: deleteData <instanceName> <databaseName>
+
 'use strict';
 
-async function main(
-  instanceId = 'my-instance', // Your Cloud Spanner instance ID
-  databaseId = 'my-database' // Your Cloud Spanner database ID
-) {
-  // [START spanner_quickstart]
+async function main(instanceId, databaseId) {
+  // [START spanner_delete_data]
   // Imports the Google Cloud client library
   const {Spanner} = require('@google-cloud/spanner');
+
+  /**
+   * TODO(developer): Uncomment the following lines before running the sample.
+   */
+  // const instanceId = 'my-instance';
+  // const databaseId = 'my-database';
 
   // Creates a client
   const spanner = new Spanner();
 
-  async function quickstart() {
+  async function deleteData() {
     // Gets a reference to a Cloud Spanner instance and database
     const instance = spanner.instance(instanceId);
     const database = instance.database(databaseId);
 
-    // The query to execute
-    const query = {
-      sql: 'SELECT 1',
-    };
+    // Instantiate Spanner table object
+    const singersTable = database.table('Singers');
 
-    // Execute a simple SQL statement
-    const [rows] = await database.run(query);
-    console.log(`Query: ${rows.length} found.`);
-    rows.forEach(row => console.log(row));
+    // Deletes rows from the Singers table and the Albums table,
+    // because Albums table is defined with ON DELETE CASCADE.
+    try {
+      const keys = [1, 2, 3, 4, 5];
+      await singersTable.deleteRows(keys);
+      console.log('Deleted data.');
+    } finally {
+      await database.close();
+    }
   }
-  quickstart();
-  // [END spanner_quickstart]
+  deleteData();
+  // [END spanner_delete_data]
 }
 main(...process.argv.slice(2));
