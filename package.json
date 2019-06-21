@@ -65,6 +65,7 @@
     "google-auth-library": "^4.0.0",
     "google-gax": "^1.0.0",
     "grpc": "^1.21.1",
+    "grpc-gcp": "^0.1.1",
     "is": "^3.2.1",
     "lodash.snakecase": "^4.1.1",
     "merge-stream": "^2.0.0",
