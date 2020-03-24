@@ -39,6 +39,7 @@ import {google as databaseAdmin} from '../proto/spanner_database_admin';
 import {google as spannerClient} from '../proto/spanner';
 import {Backup} from './backup';
 import {DateStruct, PreciseDate} from '@google-cloud/precise-date';
+import {GrpcOperation} from './common-grpc/operation';
 
 export type IBackup = databaseAdmin.spanner.admin.database.v1.IBackup;
 export type IDatabase = databaseAdmin.spanner.admin.database.v1.IDatabase;
@@ -66,7 +67,7 @@ export type GetBackupOperationsResponse = PagedResponse<
   databaseAdmin.spanner.admin.database.v1.IListBackupOperationsResponse
 >;
 export type GetDatabaseOperationsResponse = PagedResponse<
-  IOperation,
+  GrpcOperation,
   databaseAdmin.spanner.admin.database.v1.IListDatabaseOperationsResponse
 >;
 
@@ -130,7 +131,7 @@ export type GetBackupOperationsCallback = RequestCallback<
   databaseAdmin.spanner.admin.database.v1.IListBackupOperationsResponse
 >;
 export type GetDatabaseOperationsCallback = RequestCallback<
-  IOperation,
+  GrpcOperation,
   databaseAdmin.spanner.admin.database.v1.IListDatabaseOperationsResponse
 >;
 export interface GetInstanceConfig
@@ -478,7 +479,8 @@ class Instance extends common.GrpcServiceObject {
         gaxOpts: query,
       },
       (err, operations, ...args) => {
-        callback!(err, operations, ...args);
+        const grpcOperations = operations ? operations.map(opr => this.parent.operation(opr.name)) : null;
+        callback!(err, grpcOperations, ...args);
       }
     );
   }

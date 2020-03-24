@@ -939,12 +939,13 @@ describe('Spanner', () => {
       // Validate operation and its metadata.
       assert.strictEqual(databaseCreateOperations.length, 1);
       const databaseCreateOperation = databaseCreateOperations[0];
+      const metadata = await databaseCreateOperation.getMetadata();
       assert.strictEqual(
-        databaseCreateOperation.metadata!.type_url,
+        metadata.type_url,
         'type.googleapis.com/google.spanner.admin.database.v1.CreateDatabaseMetadata'
       );
       const createMeta = CreateDatabaseMetadata.decode(
-        databaseCreateOperation.metadata!.value!
+        metadata.value!
       );
       assert.strictEqual(createMeta.database, databaseFullName);
     });
